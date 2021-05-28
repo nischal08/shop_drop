@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:shop_drop/providers/cart.dart';
+import 'package:shop_drop/providers/products.dart';
 
 class EditProductScreen extends StatefulWidget {
   static const routeName = '/edit-product';
@@ -8,16 +11,18 @@ class EditProductScreen extends StatefulWidget {
 
 class _EditProductScreenState extends State<EditProductScreen> {
   // final _priceFocusNode = FocusNode();
+  final _imageUrlController = TextEditingController();
 
   @override
   void dispose() {
-  
     super.dispose();
     // _priceFocusNode.dispose();
+    _imageUrlController.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final Products _productsData = Provider.of<Products>(context);
     return Scaffold(
       appBar: AppBar(
         title: Text('Edit Product'),
@@ -45,6 +50,51 @@ class _EditProductScreenState extends State<EditProductScreen> {
                 decoration: InputDecoration(labelText: 'Description'),
                 textInputAction: TextInputAction.next,
               ),
+              Row(
+                crossAxisAlignment: CrossAxisAlignment.end,
+                children: [
+                  Container(
+                    width: 100,
+                    height: 100,
+                    margin: EdgeInsets.only(
+                      top: 8,
+                      right: 10,
+                    ),
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                        width: 1,
+                        color: Colors.grey,
+                      ),
+                    ),
+                    child: _productsData.imgUrl == null
+                        ? Text("Enter a URL")
+                        : FittedBox(
+                            child: Image.network(
+                              _imageUrlController.text,
+                            ),
+                            fit: BoxFit.cover,
+                          ),
+                  ),
+                
+                    Expanded(
+                      child: TextFormField(
+                        onChanged: (value) {
+                          _productsData.setProductImageUrl(
+                            url: _imageUrlController.text,
+                          );
+                        },
+                        onFieldSubmitted: (value) {
+                          _imageUrlController.clear();
+                          
+                        },
+                        controller: _imageUrlController,
+                        decoration: InputDecoration(labelText: 'Image URL'),
+                        keyboardType: TextInputType.url,
+                        textInputAction: TextInputAction.done,
+                      ),
+                    )
+                ],
+              )
             ],
           ),
         ),

@@ -2,6 +2,8 @@ import 'package:flutter/widgets.dart';
 import 'product.dart';
 
 class Products with ChangeNotifier {
+  String? imgUrl;
+  
   List<Product> _items = [
     Product(
       id: 'p1',
@@ -38,11 +40,10 @@ class Products with ChangeNotifier {
   ];
 
   List<Product> get items {
-    
     return [..._items];
   }
+
   List<Product> get favItems {
-    
     return _items.where((prodItem) => prodItem.isFavorite).toList();
   }
 
@@ -50,11 +51,13 @@ class Products with ChangeNotifier {
     notifyListeners();
   }
 
-
-
-  
-
   Product findById(String id) {
     return _items.firstWhere((product) => product.id == id);
   }
+
+  setProductImageUrl({String? url}) {
+    imgUrl = url;
+    notifyListeners();
+  }
+
 }
