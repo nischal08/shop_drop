@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
+import 'package:shop_drop/models/http_exception.dart';
 import 'product.dart';
 
 class Products with ChangeNotifier {
@@ -109,22 +110,20 @@ class Products with ChangeNotifier {
   Future<void> updateProduct(String id, Product newProduct) async {
     final url =
         'https://shop-drop-85272-default-rtdb.firebaseio.com/products/$id.json';
-  
 
-    
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
-  http.patch(
-      Uri.parse(
-        url,
-      ),
-      body: json.encode({
-        'title': newProduct.title,
-        'description': newProduct.description,
-        'imageUrl': newProduct.imageUrl,
-        'price': newProduct.price,
-      }),
-    );
+      http.patch(
+        Uri.parse(
+          url,
+        ),
+        body: json.encode({
+          'title': newProduct.title,
+          'description': newProduct.description,
+          'imageUrl': newProduct.imageUrl,
+          'price': newProduct.price,
+        }),
+      );
 
       _items[prodIndex] = newProduct;
       notifyListeners();
@@ -133,9 +132,22 @@ class Products with ChangeNotifier {
     }
   }
 
-  void deleteProduct(String productId) {
-    _items.removeWhere((prod) => prod.id == productId);
+  Future<void> deleteProduct(String productId) async {
+    final url =
+        'https://shop-drop-85272-default-rtdb.firebaseio.com/products/$productId.json';
+    final existingProductIndex =
+        _items.indexWhere((prod) => prod.id == productId);
+    Product? existingProduct = _items[existingProductIndex];
+    _items.removeAt(existingProductIndex);
     notifyListeners();
+    final response = await http.delete(Uri.parse(url));
+    if (response.statusCode >= 400) {
+      _items.insert(existingProductIndex, existingProduct);
+      notifyListeners();
+      throw HttpException('Could not delete product.');
+    } else {
+      existingProduct = null;
+    }
   }
 
   Product findById(String id) {
