@@ -57,7 +57,11 @@ class Products with ChangeNotifier {
       final response = await http.get(
         Uri.parse(url),
       );
-      final extractedData = json.decode(response.body) as Map<String, dynamic>;
+      final Map<String,dynamic>? extractedData =
+          json.decode(response.body) as Map<String, dynamic>?;
+      if (extractedData == null) {
+        return;
+      }
       final List<Product> loadedProducts = [];
       extractedData.forEach((prodId, prodData) {
         loadedProducts.add(
@@ -78,10 +82,7 @@ class Products with ChangeNotifier {
     }
   }
 
-  Future<void> addProduct(Product product) async {
- 
-  }
-  
+  Future<void> addProduct(Product product) async {}
 
   Future<void> updateProduct(String id, Product newProduct) async {
     final url =

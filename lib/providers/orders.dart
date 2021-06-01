@@ -30,8 +30,7 @@ class Orders with ChangeNotifier {
         'https://shop-drop-85272-default-rtdb.firebaseio.com/orders.json';
     final timestamp = DateTime.now();
     try {
-   
-    final response=  await http.post(
+      final response = await http.post(
         Uri.parse(url),
         body: json.encode(
           {
@@ -62,37 +61,36 @@ class Orders with ChangeNotifier {
     }
   }
 
-  Future<void> getOrders() async {
+  Future<void> fetchOrders() async {
     try {
       const url =
           'https://shop-drop-85272-default-rtdb.firebaseio.com/orders.json';
       final _response = await http.get(Uri.parse(url));
-      final _extractedData = json.decode(_response.body);
-      List<OrderItem> _loadedData = [];
-
-      _extractedData.forEach((prodId, prodData) {
-        final _extractedProduct = prodData['products'];
-        final List<CartItem> productList = [];
-        _extractedProduct.forEach((prod) {
-          productList.add(
-            CartItem(
-              id: prod['id'],
-              title: prod['title'],
-              quantity: prod['quantity'],
-              price: prod['price'],
-            ),
-          );
-        });
-        _loadedData.add(
+      final Map<String,dynamic>? _extractedData =
+          json.decode(_response.body) as Map<String, dynamic>?;
+      final List<OrderItem> _loadedOrders = [];
+      if (_extractedData == null) {
+        return;
+      }
+      _extractedData.forEach((orderId, orderData) {
+        _loadedOrders.add(
           OrderItem(
-            id: prodId,
-            amount: prodData['amount'],
-            products: productList,
-            dateTime: DateTime.parse(prodData['dateTime']),
+            id: orderId,
+            amount: orderData['amount'],
+            products: (orderData['products'] as List<dynamic>)
+                .map(
+                  (item) => CartItem(
+                      id: item['id'],
+                      price: item['price'],
+                      quantity: item['quantity'],
+                      title: item['title']),
+                )
+                .toList(),
+            dateTime: DateTime.parse(orderData['dateTime']),
           ),
         );
       });
-      _orders = _loadedData;
+      _orders = _loadedOrders.reversed.toList();
       notifyListeners();
     } catch (error) {
       print(error);

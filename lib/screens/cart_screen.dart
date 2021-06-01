@@ -1,7 +1,10 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:shop_drop/providers/cart.dart' show Cart;
 import 'package:shop_drop/providers/orders.dart';
+import 'package:shop_drop/screens/orders_screen.dart';
 import 'package:shop_drop/widgets/cart_item.dart';
 
 class CartScreen extends StatelessWidget {
@@ -90,10 +93,36 @@ class _OrderButtonState extends State<OrderButton> {
               setState(() {
                 _isLoading = true;
               });
+              ScaffoldMessenger.of(context)..hideCurrentSnackBar();
               print("This is cart screen" + widget.cart.totalAmount.toString());
               await Provider.of<Orders>(context, listen: false).addOrder(
                   widget.cart.items.values.toList(), widget.cart.totalAmount);
               widget.cart.clear();
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Your order has being registered.',
+                      ),
+                      Text(
+                        'Soon you will get a call or email to confirm your order.',
+                      ),
+                    ],
+                  ),
+                  action: SnackBarAction(
+                   
+                    onPressed: () {
+                      Navigator.pushNamed(context, OrdersScreen.routeName);
+                    },
+                    label: "Go to Orders Detail",
+                    
+                  ),
+                  duration: Duration(seconds: 3),
+                ),
+              );
               setState(() {
                 _isLoading = false;
               });

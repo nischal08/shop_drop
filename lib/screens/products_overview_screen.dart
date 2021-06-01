@@ -23,28 +23,28 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   bool _isloading = false;
   @override
   void initState() {
-    // Future.delayed(Duration.zero).then((_) {
-    //   Provider.of<Products>(context).fetchAndSetProducts();
-    // });
+    Future.delayed(Duration.zero).then((_) {
+      Provider.of<Products>(context, listen: false).fetchAndSetProducts();
+    });
 
     super.initState();
   }
 
-  @override
-  void didChangeDependencies() {
-    if (_isInit) {
-      setState(() {
-        _isloading = true;
-      });
-      Provider.of<Products>(context).fetchAndSetProducts().then((_) {
-        setState(() {
-          _isloading = false;
-        });
-      });
-    }
-    _isInit = false;
-    super.didChangeDependencies();
-  }
+  // @override
+  // void didChangeDependencies() {
+  //   if (_isInit) {
+  //     setState(() {
+  //       _isloading = true;
+  //     });
+  //     Provider.of<Products>(context).fetchAndSetProducts().then((_) {
+  //       setState(() {
+  //         _isloading = false;
+  //       });
+  //     });
+  //   }
+  //   _isInit = false;
+  //   super.didChangeDependencies();
+  // }
 
   @override
   Widget build(BuildContext context) {
