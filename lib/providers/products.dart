@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter/widgets.dart';
 import 'package:http/http.dart' as http;
 import 'package:shop_drop/models/http_exception.dart';
-import 'package:shop_drop/providers/orders.dart';
 import 'product.dart';
 
 class Products with ChangeNotifier {
@@ -57,7 +56,7 @@ class Products with ChangeNotifier {
       final response = await http.get(
         Uri.parse(url),
       );
-      final Map<String,dynamic>? extractedData =
+      final Map<String, dynamic>? extractedData =
           json.decode(response.body) as Map<String, dynamic>?;
       if (extractedData == null) {
         return;
@@ -82,7 +81,35 @@ class Products with ChangeNotifier {
     }
   }
 
-  Future<void> addProduct(Product product) async {}
+  Future<void> addProduct(Product product) async {
+    const url =
+        'https://shop-drop-85272-default-rtdb.firebaseio.com/products.json';
+    try {
+      final response = await http.post(
+        Uri.parse(url),
+        body: json.encode({
+          'title': product.title,
+          'description': product.description,
+          'imageUrl': product.imageUrl,
+          'price': product.price,
+          'isFavorite': product.isFavorite,
+        }),
+      );
+      final newProduct = Product(
+        title: product.title,
+        description: product.description,
+        price: product.price,
+        imageUrl: product.imageUrl,
+        id: json.decode(response.body)['name'],
+      );
+      // _items.add(newProduct);
+      _items.insert(0, newProduct); // at the start of the list
+      notifyListeners();
+    } catch (error) {
+      print(error);
+      throw error;
+    }
+  }
 
   Future<void> updateProduct(String id, Product newProduct) async {
     final url =

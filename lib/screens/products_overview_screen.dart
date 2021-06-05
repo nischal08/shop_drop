@@ -19,32 +19,37 @@ class ProductsOverviewScreen extends StatefulWidget {
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _showOnlyFavorities = false;
-  var _isInit = true;
   bool _isloading = false;
-  @override
-  void initState() {
-    Future.delayed(Duration.zero).then((_) {
-      Provider.of<Products>(context, listen: false).fetchAndSetProducts();
-    });
-
-    super.initState();
-  }
-
+  bool _isInit = true;
   // @override
-  // void didChangeDependencies() {
-  //   if (_isInit) {
-  //     setState(() {
-  //       _isloading = true;
-  //     });
-  //     Provider.of<Products>(context).fetchAndSetProducts().then((_) {
-  //       setState(() {
-  //         _isloading = false;
-  //       });
-  //     });
-  //   }
-  //   _isInit = false;
-  //   super.didChangeDependencies();
+  // void initState() {
+  //   _isloading = true;
+  //   setState(() {});
+  //   Future.delayed(Duration.zero).then((_) {
+  //     Provider.of<Products>(context, listen: false).fetchAndSetProducts();
+  //   }).then((_) {
+  //     _isloading = false;
+  //     setState(() {});
+  //   });
+
+  //   super.initState();
   // }
+
+  @override
+  void didChangeDependencies() {
+    if (_isInit) {
+      setState(() {
+        _isloading = true;
+      });
+      Provider.of<Products>(context).fetchAndSetProducts().then((_) {
+        setState(() {
+          _isloading = false;
+        });
+      });
+    }
+    _isInit = false;
+    super.didChangeDependencies();
+  }
 
   @override
   Widget build(BuildContext context) {
