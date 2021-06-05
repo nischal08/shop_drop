@@ -9,6 +9,7 @@ import 'package:shop_drop/screens/edit_product_screen.dart';
 
 import 'package:shop_drop/screens/orders_screen.dart';
 import 'package:shop_drop/screens/product_detail_screen.dart';
+import 'package:shop_drop/screens/products_overview_screen.dart';
 import 'package:shop_drop/screens/user_products_screen.dart';
 import 'providers/products.dart';
 
@@ -20,33 +21,45 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
-          create: (ctx) => Products(),
+          create: (ctx) => Auth(),
+        ),
+        ChangeNotifierProxyProvider<Auth, Products>(
+          create: (____) => Products(),
+          update: (context, auth, previousProducts) {
+            return Products()
+              ..setAuthToken(auth.token!)
+              ..setItems(previousProducts!.items);
+          },
         ),
         ChangeNotifierProvider(
           create: (ctx) => Cart(),
         ),
-        ChangeNotifierProvider(
+        ChangeNotifierProxyProvider<Auth, Orders>(
+          update: (context, auth, previous) {
+            return Orders()
+              ..setAuthToken(auth.token!)
+              ..setOrderItems(previous!.orders);
+          },
           create: (ctx) => Orders(),
         ),
-        ChangeNotifierProvider(
-          create: (ctx) => Auth(),
-        ),
       ],
-      child: MaterialApp(
-        title: 'ShopDrop',
-        theme: ThemeData(
-          primarySwatch: Colors.purple,
-          accentColor: Colors.deepOrange,
-          fontFamily: 'Lato',
+      child: Consumer<Auth>(
+        builder: (context, auth, _) => MaterialApp(
+          title: 'ShopDrop',
+          theme: ThemeData(
+            primarySwatch: Colors.purple,
+            accentColor: Colors.deepOrange,
+            fontFamily: 'Lato',
+          ),
+          home: auth.isAuth ? ProductsOverviewScreen() : AuthScreen(),
+          routes: {
+            ProductDetailScreen.routeName: (context) => ProductDetailScreen(),
+            CartScreen.routeName: (context) => CartScreen(),
+            OrdersScreen.routeName: (context) => OrdersScreen(),
+            UserProductsScreen.routeName: (context) => UserProductsScreen(),
+            EditProductScreen.routeName: (context) => EditProductScreen(),
+          },
         ),
-        home: AuthScreen(),
-        routes: {
-          ProductDetailScreen.routeName: (context) => ProductDetailScreen(),
-          CartScreen.routeName: (context) => CartScreen(),
-          OrdersScreen.routeName: (context) => OrdersScreen(),
-          UserProductsScreen.routeName: (context) => UserProductsScreen(),
-          EditProductScreen.routeName: (context) => EditProductScreen(),
-        },
       ),
     );
   }

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_drop/providers/auth.dart';
 import 'package:shop_drop/providers/cart.dart';
 import 'package:shop_drop/providers/product.dart';
 import 'package:shop_drop/screens/product_detail_screen.dart';
@@ -18,6 +19,7 @@ class ProductItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final product = Provider.of<Product>(context, listen: false);
+    final authData = Provider.of<Auth>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
     print("Product rebuilds");
     return ClipRRect(
@@ -41,7 +43,7 @@ class ProductItem extends StatelessWidget {
             builder: (_, product, child) => IconButton(
               color: Theme.of(context).accentColor,
               onPressed: () {
-                product.toggleFavoriteStatus(context);
+                product.toggleFavoriteStatus(context,token: authData.token);
                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
               },
               icon: Icon(

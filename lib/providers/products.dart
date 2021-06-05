@@ -6,6 +6,15 @@ import 'package:shop_drop/models/http_exception.dart';
 import 'product.dart';
 
 class Products with ChangeNotifier {
+  late String _authToken;
+  String get authToken => this._authToken;
+
+  void setAuthToken(String value) {
+    _authToken = value;
+    print("From Products Controller:  $_authToken");
+    notifyListeners();
+  }
+
   List<Product> _items = [
     // Product(
     //   id: 'p1',
@@ -45,13 +54,17 @@ class Products with ChangeNotifier {
     return [..._items];
   }
 
+  void setItems(List<Product> products) {
+    _items = products;
+  }
+
   List<Product> get favItems {
     return _items.where((prodItem) => prodItem.isFavorite).toList();
   }
 
   Future<void> fetchAndSetProducts() async {
-    const url =
-        'https://shop-drop-85272-default-rtdb.firebaseio.com/products.json';
+    final url =
+        'https://shop-drop-85272-default-rtdb.firebaseio.com/products.json?auth=$authToken';
     try {
       final response = await http.get(
         Uri.parse(url),
@@ -82,8 +95,8 @@ class Products with ChangeNotifier {
   }
 
   Future<void> addProduct(Product product) async {
-    const url =
-        'https://shop-drop-85272-default-rtdb.firebaseio.com/products.json';
+    final url =
+        'https://shop-drop-85272-default-rtdb.firebaseio.com/products.json?auth=$authToken';
     try {
       final response = await http.post(
         Uri.parse(url),
@@ -113,7 +126,7 @@ class Products with ChangeNotifier {
 
   Future<void> updateProduct(String id, Product newProduct) async {
     final url =
-        'https://shop-drop-85272-default-rtdb.firebaseio.com/products/$id.json';
+        'https://shop-drop-85272-default-rtdb.firebaseio.com/products/$id.json?auth=$authToken';
 
     final prodIndex = _items.indexWhere((prod) => prod.id == id);
     if (prodIndex >= 0) {
@@ -138,7 +151,7 @@ class Products with ChangeNotifier {
 
   Future<void> deleteProduct(String productId) async {
     final url =
-        'https://shop-drop-85272-default-rtdb.firebaseio.com/products/$productId.json';
+        'https://shop-drop-85272-default-rtdb.firebaseio.com/products/$productId.json?auth=$authToken';
     final existingProductIndex =
         _items.indexWhere((prod) => prod.id == productId);
     Product? existingProduct = _items[existingProductIndex];
