@@ -21,16 +21,20 @@ class OrderItem {
 
 class Orders with ChangeNotifier {
   List<OrderItem> _orders = [];
-  late String _authToken;
+  late String? _authToken;
+  late String? _userId;
+  String? get userId => this._userId;
+  set userId(String? value) => this._userId = value;
+
   List<OrderItem> get orders {
     return [..._orders];
   }
 
-
-  void setAuthToken(String newToken) {
+  void setAuthToken(String? newToken) {
     _authToken = newToken;
     notifyListeners();
   }
+
   void setOrderItems(List<OrderItem> listOfOrderItem) {
     _orders = listOfOrderItem;
     notifyListeners();
@@ -38,7 +42,7 @@ class Orders with ChangeNotifier {
 
   Future<void> addOrder(List<CartItem> cartProducts, double total) async {
     final url =
-        'https://shop-drop-85272-default-rtdb.firebaseio.com/orders.json?auth=$_authToken';
+        'https://shop-drop-85272-default-rtdb.firebaseio.com/orders/$userId.json?auth=$_authToken';
     final timestamp = DateTime.now();
     try {
       final response = await http.post(
@@ -75,7 +79,7 @@ class Orders with ChangeNotifier {
   Future<void> fetchOrders() async {
     try {
       final url =
-          'https://shop-drop-85272-default-rtdb.firebaseio.com/orders.json?auth=$_authToken';
+          'https://shop-drop-85272-default-rtdb.firebaseio.com/orders/$userId.json?auth=$_authToken';
       final _response = await http.get(Uri.parse(url));
       final Map<String, dynamic>? _extractedData =
           json.decode(_response.body) as Map<String, dynamic>?;

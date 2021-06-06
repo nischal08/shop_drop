@@ -26,18 +26,16 @@ class Product with ChangeNotifier {
     notifyListeners();
   }
 
-  void toggleFavoriteStatus(context,{String? token}) async {
+  void toggleFavoriteStatus(context, {String? token, String? userID}) async {
     final oldStatus = isFavorite;
     isFavorite = !isFavorite;
     notifyListeners();
     final url =
-        'https://shop-drop-85272-default-rtdb.firebaseio.com/products/$id.json?auth=$token';
+        'https://shop-drop-85272-default-rtdb.firebaseio.com/userFavorites/$userID/$id.json?auth=$token';
 
     try {
-      final response = await http.patch(Uri.parse(url),
-          body: json.encode(
-            {"isFavorite": isFavorite},
-          ));
+      final response =
+          await http.put(Uri.parse(url), body: json.encode(isFavorite));
 
       if (response.statusCode >= 400) {
         _setFavValue(oldStatus);
@@ -53,7 +51,7 @@ class Product with ChangeNotifier {
         );
       }
     } catch (error) {
-       _setFavValue(oldStatus);
+      _setFavValue(oldStatus);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(

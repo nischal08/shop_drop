@@ -43,7 +43,7 @@ class ProductItem extends StatelessWidget {
             builder: (_, product, child) => IconButton(
               color: Theme.of(context).accentColor,
               onPressed: () {
-                product.toggleFavoriteStatus(context,token: authData.token);
+                product.toggleFavoriteStatus(context,token: authData.token,userID: authData.userId );
                    ScaffoldMessenger.of(context).hideCurrentSnackBar();
               },
               icon: Icon(
