@@ -21,7 +21,7 @@ class ProductItem extends StatelessWidget {
     final product = Provider.of<Product>(context, listen: false);
     final authData = Provider.of<Auth>(context, listen: false);
     final cart = Provider.of<Cart>(context, listen: false);
-    print("Product rebuilds");
+ 
     return ClipRRect(
       borderRadius: BorderRadius.circular(10),
       child: GridTile(

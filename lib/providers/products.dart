@@ -14,13 +14,13 @@ class Products with ChangeNotifier {
 
   void setAuthToken(String? value) {
     _authToken = value;
-    print("From Products Controller:  $_authToken");
+    // print("From Products Controller:  $_authToken");
     notifyListeners();
   }
 
   void setUserId(String? userId) {
     _userID = userId;
-    print("From Products Controller:  $_userID");
+    // print("From Products Controller:  $_userID");
     notifyListeners();
   }
 
@@ -57,7 +57,7 @@ class Products with ChangeNotifier {
 
       url =
           'https://shop-drop-85272-default-rtdb.firebaseio.com/userFavorites/$userId.json?auth=$authToken';
-      print(url);
+     
       final favoriteResponse = await http.get(
         Uri.parse(url),
       );
