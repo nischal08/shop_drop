@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:shop_drop/helpers/custom_route.dart';
 import 'package:shop_drop/providers/auth.dart';
 import 'package:shop_drop/providers/cart.dart';
 import 'package:shop_drop/providers/orders.dart';
@@ -50,6 +51,10 @@ class MyApp extends StatelessWidget {
         builder: (context, auth, _) => MaterialApp(
           title: 'ShopDrop',
           theme: ThemeData(
+            // pageTransitionsTheme: PageTransitionsTheme(builders: {
+            //   TargetPlatform.android: CustomPageTransitionBuilder(),
+            //   TargetPlatform.iOS: CustomPageTransitionBuilder(),
+            // }),
             primarySwatch: Colors.purple,
             accentColor: Colors.deepOrange,
             fontFamily: 'Lato',
