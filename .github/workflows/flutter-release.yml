@@ -1,0 +1,82 @@
+# This is a basic workflow that is manually triggered
+
+name: Flutter Release
+
+# Controls when the action will run. Workflow runs when manually triggered using the UI
+# or API.
+
+
+
+on:
+  release:
+   types: [published]
+  workflow_dispatch:
+    # Inputs the workflow accepts.
+    inputs:
+      name:
+        # Friendly description to be shown in the UI instead of 'name'
+        description: 'Person to greet'
+        # Default value if no value is explicitly provided
+        default: 'World'
+        # Input has to be provided for the workflow to run
+        required: true
+
+# A workflow run is made up of one or more jobs that can run sequentially or in parallel
+jobs:
+  # This workflow contains a single job called "greet"
+  greet:
+    # The type of runner that the job will run on
+    runs-on: ubuntu-latest
+
+    # Steps represent a sequence of tasks that will be executed as part of the job
+    steps:
+    # Runs a single command using the runners shell
+    - name: Send greeting
+      run: echo "Hello ${{ github.event.inputs.name }}"
+    - name: Checkout
+      uses: actions/checkout@v1
+      
+    - name: Setup Java
+      uses: actions/setup-java@v1
+      with:
+        java-version: '12.x'
+    - name: Setup Flutter
+      uses: subosito/flutter-action@v1
+      with:
+        channel: beta
+    - name: Flutter version
+      run: flutter --version
+    - name: Cache pub dependencies
+      uses: actions/cache@v2
+      with:
+         path: ${{ env.FLUTTER_HOME }}/.pub-cache
+         key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+         restore-keys: ${{ runner.os }}-pub-
+    - name: Download pub dependencies
+      run: flutter pub get
+      
+    - name: Cache pub dependencies
+      uses: actions/cache@v2
+      with:
+        path: ${{ env.FLUTTER_HOME }}/.pub-cache
+        key: ${{ runner.os }}-pub-${{ hashFiles('**/pubspec.lock') }}
+        restore-keys: ${{ runner.os }}-pub-
+        
+    - name: Download pub dependencies
+      run: flutter pub get
+      
+    - name: Download Android keystore
+      id: android_keystore
+      uses: timheuer/base64-to-file@v1.0.3
+      with:
+        fileName: key.jks
+        encodedString: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+    - name: Create key.properties
+      run: |
+        echo "storeFile=${{ steps.android_keystore.outputs.filePath }}" > android/key.properties
+        echo "storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" >> android/key.properties
+        echo "keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}" >> android/key.properties
+        echo "keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}" >> android/key.properties
+      
+    - name: Build Android App Bundle
+      run: flutter build appbundle 
